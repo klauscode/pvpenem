@@ -2,7 +2,10 @@
 // Docs: https://docs.enem.dev/introduction
 // Base URL: https://api.enem.dev/v1
 
+import { fetch as undiciFetch } from 'undici';
+
 const ENEM_BASE = process.env.ENEM_API_BASE || 'https://api.enem.dev/v1';
+const httpFetch = (...args) => (typeof fetch === 'function' ? fetch(...args) : undiciFetch(...args));
 
 // Cache of questionId -> { correctLetter, correctText, options: [{letter,text,imageUrl}], discipline, year }
 const ANSWER_CACHE = new Map();
@@ -36,7 +39,7 @@ function extractImageUrlsFromMarkdown(md) {
 }
 
 async function pickRandomExamYear() {
-  const res = await fetch(`${ENEM_BASE}/exams`);
+  const res = await httpFetch(`${ENEM_BASE}/exams`);
   if (!res.ok) throw new Error(`ENEM exams ${res.status}`);
   const arr = await res.json();
   const exams = Array.isArray(arr) ? arr : arr.value || [];
@@ -47,7 +50,7 @@ async function pickRandomExamYear() {
 
 async function fetchQuestionsPage(year, offset = 0, limit = 25) {
   const url = `${ENEM_BASE}/exams/${year}/questions?limit=${limit}&offset=${offset}`;
-  const res = await fetch(url);
+  const res = await httpFetch(url);
   if (!res.ok) throw new Error(`ENEM questions ${res.status}`);
   return res.json();
 }
@@ -83,22 +86,21 @@ function toInternalQuestion(q, disciplineWanted) {
 }
 
 export async function fetchQuestion(topic = 'matematica', { strictApi = false } = {}) {
-  // Try ENEM API across a couple random years, scan pages until we find the discipline
+  // Try ENEM API a limited number of times with random years/offsets to avoid rate limits
   const discipline = topicToDiscipline(topic);
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 6; attempt++) {
     try {
       const year = await pickRandomExamYear();
       const metaPage = await fetchQuestionsPage(year, 0, 1);
       const total = metaPage?.metadata?.total || 180;
       const limit = Math.min(50, total);
-      for (let offset = 0; offset < total; offset += limit) {
-        const page = await fetchQuestionsPage(year, offset, limit);
-        const list = page?.questions || [];
-        const filtered = list.filter((q) => q.discipline === discipline);
-        if (filtered.length) {
-          const chosen = filtered[Math.floor(Math.random() * filtered.length)];
-          if (chosen) return toInternalQuestion(chosen, discipline);
-        }
+      const offset = Math.max(0, Math.floor(Math.random() * Math.max(1, total - limit)));
+      const page = await fetchQuestionsPage(year, offset, limit);
+      const list = page?.questions || [];
+      const filtered = list.filter((q) => q.discipline === discipline);
+      if (filtered.length) {
+        const chosen = filtered[Math.floor(Math.random() * filtered.length)];
+        if (chosen) return toInternalQuestion(chosen, discipline);
       }
     } catch (err) {
       // try next year
