@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/auth/(.*)", "destination": "https://enem-arena-backend.example.com/auth/$1" },
+    { "source": "/users/(.*)", "destination": "https://enem-arena-backend.example.com/users/$1" },
+    { "source": "/leaderboard/(.*)", "destination": "https://enem-arena-backend.example.com/leaderboard/$1" },
+    { "source": "/gacha/(.*)", "destination": "https://enem-arena-backend.example.com/gacha/$1" }
+  ]
+}
+

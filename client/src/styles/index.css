@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { font-family: theme('fontFamily.mono'); }
+}
+
+@layer components {
+  .btn-primary {@apply px-4 py-2 rounded-md bg-primary-600/90 hover:bg-primary-700 text-white transition shadow-[0_0_15px_rgba(189,147,249,0.35)] hover:shadow-[0_0_25px_rgba(189,147,249,0.55)];}
+  .btn-ghost {@apply px-3 py-2 rounded-md bg-transparent border border-slate-700/70 text-slate-300 hover:bg-slate-800/40 transition;}
+  .card {@apply bg-cyber-700/50 border border-slate-800 rounded-2xl shadow-[0_0_18px_rgba(255,121,198,0.12)];}
+  .input {@apply w-full px-3 py-2 rounded-md bg-slate-900/60 border border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent/60;}
+  .badge {@apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs uppercase tracking-wide bg-slate-800/60 border border-slate-700 text-slate-300;}
+  .badge-success {@apply bg-emerald-900/30 border-emerald-700 text-emerald-300 shadow-[0_0_10px_rgba(80,250,123,0.25)];}
+  .badge-danger {@apply bg-rose-900/30 border-rose-700 text-rose-300 shadow-[0_0_10px_rgba(255,85,85,0.25)];}
+  .neon-title {@apply text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary-500 to-success drop-shadow-[0_0_15px_rgba(255,121,198,0.3)];}
+}

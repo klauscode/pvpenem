@@ -1,0 +1,5 @@
+/auth/* https://enem-arena-backend.example.com/auth/:splat 200
+/users/* https://enem-arena-backend.example.com/users/:splat 200
+/leaderboard/* https://enem-arena-backend.example.com/leaderboard/:splat 200
+/gacha/* https://enem-arena-backend.example.com/gacha/:splat 200
+
