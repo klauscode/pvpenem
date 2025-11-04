@@ -41,8 +41,15 @@ export default function App() {
       setSocket(null);
       return;
     }
-    const s = io(import.meta?.env?.VITE_WS_URL || 'http://localhost:4000', {
-      auth: { token }
+    const wsUrl = (import.meta?.env?.VITE_WS_URL || import.meta?.env?.VITE_API_BASE || (import.meta?.env?.DEV ? 'http://localhost:4000' : ''));
+    if (!wsUrl) {
+      console.error('VITE_WS_URL not set in production; set to your backend URL.');
+      return;
+    }
+    const normalized = wsUrl.endsWith('/') ? wsUrl.slice(0, -1) : wsUrl;
+    const s = io(normalized, {
+      auth: { token },
+      transports: ['websocket']
     });
     setSocket(s);
     return () => s.disconnect();
