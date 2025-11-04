@@ -401,7 +401,10 @@ io.on('connection', (socket) => {
       if (test) {
         const p1 = { userId, username, socketId: socket.id };
         const p2 = { userId: 'BOT', username: 'TestBot', socketId: null, isBot: true };
-        await startBattle(topic, p1, p2, { strictApi, isTestBattle: true });
+        const state = await startBattle(topic, p1, p2, { strictApi, isTestBattle: true });
+        if (!state) {
+          socket.emit('queue_failed', { reason: 'api_unavailable_or_rate_limited' });
+        }
       } else {
         const queue = getQueue(topic);
         // Remove any stale entries for this user
@@ -412,7 +415,13 @@ io.on('connection', (socket) => {
         if (queue.length >= 2) {
           const p1 = queue.shift();
           const p2 = queue.shift();
-          await startBattle(topic, p1, p2, { strictApi });
+          const state = await startBattle(topic, p1, p2, { strictApi });
+          if (!state) {
+            const s1 = io.sockets.sockets.get(p1.socketId);
+            const s2 = io.sockets.sockets.get(p2.socketId);
+            s1?.emit('queue_failed', { reason: 'api_unavailable_or_rate_limited' });
+            s2?.emit('queue_failed', { reason: 'api_unavailable_or_rate_limited' });
+          }
         }
       }
     } catch (err) {

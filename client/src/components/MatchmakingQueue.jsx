@@ -14,7 +14,11 @@ export default function MatchmakingQueue({ socket }) {
       setStatus(`Matched vs ${opponent.username}`);
       setTimeout(() => navigate('/battle'), 300);
     };
+    const onFail = (p) => {
+      setStatus('Queue failed: ENEM API unavailable or rate limited. Try again or disable Strict API.');
+    };
     socket?.on('match_found', onFound);
+    socket?.on('queue_failed', onFail);
     return () => socket?.off('match_found', onFound);
   }, [socket]);
 
