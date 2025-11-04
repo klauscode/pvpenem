@@ -1,16 +1,18 @@
 services:
   - type: web
-    name: enem-arena-server
+    name: pvpenem-backend
     env: node
     plan: free
     rootDir: server
     buildCommand: npm install
     startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
     envVars:
-      - key: PORT
-        value: 4000
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: "*"
-
+        value: https://pvpenem.vercel.app
+      # uncomment if/when you add MongoDB
+      # - key: MONGODB_URI
+      #   value: mongodb+srv://<...>
