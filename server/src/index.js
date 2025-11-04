@@ -41,8 +41,33 @@ async function connectWithFallback() {
   }
 }
 
+function makeCorsOrigin(allowed) {
+  if (!allowed || allowed === '*') {
+    return (origin, callback) => callback(null, true);
+  }
+  const items = String(allowed)
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const patterns = items.map((s) => {
+    if (s.includes('*')) {
+      const esc = s.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+      const rx = '^' + esc.replace(/\*/g, '.*') + '$';
+      return new RegExp(rx);
+    }
+    return s;
+  });
+  return (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const ok = patterns.some((p) => (p instanceof RegExp ? p.test(origin) : p === origin));
+    callback(ok ? null : new Error('Not allowed by CORS'), ok);
+  };
+}
+
+const corsOrigin = makeCorsOrigin(process.env.CORS_ORIGIN || '*');
+
 const app = express();
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
@@ -53,7 +78,7 @@ app.use('/gacha', gachaRoutes);
 
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
-  cors: { origin: process.env.CORS_ORIGIN || '*' }
+  cors: { origin: corsOrigin, credentials: true }
 });
 
 io.use(socketAuthMiddleware);
