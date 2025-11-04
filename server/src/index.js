@@ -389,6 +389,7 @@ io.on('connection', (socket) => {
   socket.on('enter_matchmaking', async ({ topic, test = false, strictApi = false }) => {
     try {
       topic = topic || 'matematica';
+      socket.emit('queue_joined', { topic, test, strictApi });
       // Prevent double-enqueue or enqueue while in battle
       for (const [battleId, state] of battles.entries()) {
         if (
