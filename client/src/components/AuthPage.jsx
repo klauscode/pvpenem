@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../lib/api.js';
 
 export default function AuthPage({ authApi }) {
+  const navigate = useNavigate();
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +22,7 @@ export default function AuthPage({ authApi }) {
       if (!res.ok) throw new Error(data.error || 'Failed');
       localStorage.setItem('token', data.token);
       authApi.setToken(data.token);
-      window.location.href = '/';
+      navigate('/');
     } catch (err) {
       setError(err.message);
     }

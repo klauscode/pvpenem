@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../lib/api.js';
 
 export default function HomePage({ socket }) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [topic, setTopic] = useState('matematica');
   const [testMode, setTestMode] = useState(() => localStorage.getItem('testMode') === 'true');
@@ -16,9 +18,7 @@ export default function HomePage({ socket }) {
     })();
   }, []);
 
-  function play() {
-    window.location.href = '/queue';
-  }
+  function play() { navigate('/queue'); }
 
   return (
     <div className="grid gap-6 md:grid-cols-3">

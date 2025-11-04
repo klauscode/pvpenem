@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ResultsScreen({ results }) {
+  const navigate = useNavigate();
   if (!results) return <div className="card p-6">No results yet.</div>;
   const { final_results, rewards } = results;
   const topicLabel = (() => {
@@ -42,7 +44,7 @@ export default function ResultsScreen({ results }) {
         <h3 className="font-medium mb-3">Rewards</h3>
         <div className="text-sm text-slate-400 mb-2">Your KP and ELO change are applied.</div>
         <div className="text-xs text-slate-500">(Exact mapping depends on your userId; see Raw data)</div>
-        <button className="btn-primary mt-6 w-full" onClick={() => (window.location.href = '/')}>Back Home</button>
+        <button className="btn-primary mt-6 w-full" onClick={() => navigate('/')}>Back Home</button>
       </div>
     </div>
   );

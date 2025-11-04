@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function MatchmakingQueue({ socket }) {
+  const navigate = useNavigate();
   const [status, setStatus] = useState('Searching...');
 
   useEffect(() => {
@@ -10,7 +12,7 @@ export default function MatchmakingQueue({ socket }) {
     if (socket) socket.emit('enter_matchmaking', { topic, test, strictApi });
     const onFound = ({ opponent, battleId }) => {
       setStatus(`Matched vs ${opponent.username}`);
-      setTimeout(() => (window.location.href = '/battle'), 300);
+      setTimeout(() => navigate('/battle'), 300);
     };
     socket?.on('match_found', onFound);
     return () => socket?.off('match_found', onFound);
@@ -24,7 +26,7 @@ export default function MatchmakingQueue({ socket }) {
         </div>
         <h3 className="text-lg font-medium mb-2">{status}</h3>
         <p className="text-slate-400 mb-6">Waiting for another scholar to join your topic.</p>
-        <button className="text-slate-300 hover:text-red-400" onClick={() => (window.location.href = '/')}>Cancel</button>
+        <button className="text-slate-300 hover:text-red-400" onClick={() => navigate('/')}>Cancel</button>
       </div>
     </div>
   );

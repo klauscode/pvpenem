@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const DURATION_MS = 10 * 60 * 1000;
 
 export default function BattleScreen({ socket, onComplete }) {
+  const navigate = useNavigate();
   const [question, setQuestion] = useState(null);
   const [myScore, setMyScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
@@ -51,7 +53,7 @@ export default function BattleScreen({ socket, onComplete }) {
       clearInterval(timerRef.current);
       timerRef.current = null;
       onComplete?.({ final_results, rewards });
-      window.location.href = '/results';
+      navigate('/results');
     }
     socket?.on('battle_start', onStart);
     socket?.on('answer_result', onAnswer);
