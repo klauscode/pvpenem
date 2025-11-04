@@ -41,7 +41,7 @@ export default function App() {
       setSocket(null);
       return;
     }
-    const wsUrl = (import.meta?.env?.VITE_WS_URL || import.meta?.env?.VITE_API_BASE || (import.meta?.env?.DEV ? 'http://localhost:4000' : ''));
+    const wsUrl = (import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_BASE || (import.meta.env.DEV ? 'http://localhost:4000' : ''));
     if (!wsUrl) {
       console.error('VITE_WS_URL not set in production; set to your backend URL.');
       return;
